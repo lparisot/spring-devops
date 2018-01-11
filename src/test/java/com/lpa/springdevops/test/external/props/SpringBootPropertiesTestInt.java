@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource("/application.properties")
 @SpringBootTest
-public class SpringBootPropertiesTest {
+public class SpringBootPropertiesTestInt {
     @Autowired
     FakeJmsBroker fakeJmsBroker;
 
