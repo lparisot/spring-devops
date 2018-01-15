@@ -10,6 +10,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
 
+// see https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource("/application.properties")
 @SpringBootTest
