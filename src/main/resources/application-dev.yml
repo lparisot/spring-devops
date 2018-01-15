@@ -1,0 +1,4 @@
+com:
+  lpa:
+    springdevops:
+      profile.message: This is the dev profile
