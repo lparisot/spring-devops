@@ -1,0 +1,8 @@
+---
+- hosts: jenkins
+  # get privilege
+  become: true
+  roles:
+    - java
+    - jenkins
+    - apache
