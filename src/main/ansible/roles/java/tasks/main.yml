@@ -1,2 +1,183 @@
 ---
 # tasks file for java
+- name: install java requirements
+  yum: name={{ item }} state=present
+  with_items:
+    - wget
+  tags: [ 'packages' ]
+
+
+- name: set java architecture
+  set_fact:
+    jdk_arch: "{{ 'i586' if ansible_architecture == 'i386' else 'x64' }}"
+
+- name: set java OS for Linux
+  set_fact:
+    jdk_os: linux
+  when: ansible_system == "Linux"
+
+- name: set java OS for Mac OS X
+  set_fact:
+    jdk_os: macosx
+  when: ansible_os_family == "Darwin"
+
+
+
+- name: set internal vars for 1.8.0_161
+  set_fact:
+    path_detail: "2f38c3b165be4555a1fa6e98c45e0808"
+    jdk_version_detail: "{{ java_version }}u{{ java_subversion }}-b12"
+  when: java_version == 8 and java_subversion == 161
+
+- name: set internal vars for generic Java version
+  set_fact:
+    jdk_version_detail: "{{ java_version }}u{{ java_subversion }}-b{{ java_build }}"
+  when: jdk_version_detail is not defined and java_build is defined
+
+
+
+- name: compose filename, if necessary
+  set_fact:
+    jdk_tarball_file: "jdk-{{ java_version }}u{{ java_subversion }}-{{ jdk_os }}-{{ jdk_arch }}"
+  when: jdk_tarball_file is not defined
+
+- name: compose URL for downloading file, if necessary
+  set_fact:
+    jdk_tarball_url: "http://download.oracle.com/otn-pub/java/jdk/{{ jdk_version_detail }}/{{ jdk_tarball_file }}"
+  when: jdk_version_detail is defined and path_detail is not defined
+
+- name: compose URL for downloading file, if necessary
+  set_fact:
+    jdk_tarball_url: "http://download.oracle.com/otn-pub/java/jdk/{{ jdk_version_detail }}/{{ path_detail }}/{{ jdk_tarball_file }}"
+  when: jdk_version_detail is defined and path_detail is defined
+
+
+
+- name: set java installation directory on Mac OS X
+  set_fact:
+    java_install_dir: /no_such_directory
+  when: ansible_os_family == "Darwin"
+
+- name: set java installation directory on other platform
+  set_fact:
+    java_install_dir: /opt
+  when: ansible_os_family != "Darwin"
+
+
+
+- name: get JDK tarball (as tar.gz file)
+  get_url:
+    url: "{{ jdk_tarball_url }}.tar.gz"
+    headers: "Cookie:oraclelicense=accept-securebackup-cookie"
+    dest: "{{ java_download_path }}/{{ jdk_tarball_file }}.tar.gz"
+  changed_when: false
+  when: ansible_os_family != "Darwin"
+  tags: [ 'packages' ]
+
+- name: get JDK package (as dmg file)
+  get_url:
+    url: "{{ jdk_tarball_url }}.dmg"
+    headers: "Cookie:oraclelicense=accept-securebackup-cookie"
+    dest: "{{ java_download_path }}/{{ jdk_tarball_file }}.dmg"
+  changed_when: false
+  when: ansible_os_family == "Darwin"
+  tags: [ 'packages' ]
+
+
+
+- name: is tar gz file
+  stat:
+    path: "{{ java_download_path }}/{{ jdk_tarball_file }}.tar.gz"
+  register: tar_file
+
+- name: is rpm file
+  stat:
+    path: "{{ java_download_path }}/{{ jdk_tarball_file }}.rpm"
+  register: rpm_file
+
+
+- name: delegate to tarball installation process
+  include_tasks: use-tarball.yml
+  when: tar_file.stat.exists == True
+
+- name: delegate to yum installation process
+  include_tasks: use-rpm.yml
+  when: rpm_file.stat.exists == True
+
+- name: delegate to Mac OS X dmg installation process
+  include_tasks: use-dmg.yml
+  when: ansible_os_family == "Darwin"
+
+
+
+- name: alternatives link for java is created
+  alternatives:
+    name: java
+    link: /usr/bin/java
+    path: "{{ java_install_dir }}/jdk{{ jdk_version }}/bin/java"
+    priority: 2
+
+- name: alternatives link for jar is created
+  alternatives:
+    name: jar
+    link: /usr/bin/jar
+    path: "{{ java_install_dir }}/jdk{{ jdk_version }}/bin/jar"
+    priority: 2
+
+- name: alternatives link for javac is created
+  alternatives:
+    name: javac
+    link: /usr/bin/javac
+    path: "{{ java_install_dir }}/jdk{{ jdk_version }}/bin/javac"
+    priority: 2
+
+
+
+- name: create java path
+  set_fact:
+    extra_path: "{{ java_install_dir }}/jdk{{ jdk_version }}/bin"
+
+- name: add java to path
+  lineinfile:
+    dest: "{{ bash_profile }}"
+    regexp: 'PATH=(["]*)((?!.*{{extra_path}}).*?)(["]*)$'
+    line: 'PATH=\1\2:{{extra_path}}\3'
+    backrefs: yes
+    state: present
+
+- name: create jre path
+  set_fact:
+    extra_path: "{{ java_install_dir }}/jdk{{ jdk_version }}/jre/bin"
+
+- name: add java to path
+  lineinfile:
+    dest: "{{ bash_profile }}"
+    regexp: 'PATH=(["]*)((?!.*{{extra_path}}).*?)(["]*)$'
+    line: 'PATH=\1\2:{{extra_path}}\3'
+    backrefs: yes
+    state: present
+
+- name: add JAVA_HOME
+  lineinfile:
+    dest: "{{ bash_profile }}"
+    regexp: "^export JAVA_HOME"
+    line: "export JAVA_HOME={{ java_install_dir }}/jdk{{ jdk_version }}"
+    state: present
+
+- name: add JRE_HOME
+  lineinfile:
+    dest: "{{ bash_profile }}"
+    regexp: "^export JRE_HOME"
+    line: "export JRE_HOME={{ java_install_dir }}/jdk{{ jdk_version }}/jre"
+    state: present
+
+
+
+- name: remove temporary downloaded files, if requested
+  file: path={{ item }} state=absent
+  with_items:
+    - "{{ java_download_path }}/{{ jdk_tarball_file }}.rpm"
+    - "{{ java_download_path }}/{{ jdk_tarball_file }}.tar.gz"
+    - "{{ java_download_path }}/{{ jdk_tarball_file }}.dmg"
+  ignore_errors: true
+  when: java_remove_download

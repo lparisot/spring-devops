@@ -1,0 +1,6 @@
+---
+- name: install JDK via rpm file with yum
+  yum:
+    name: "{{ java_download_path }}/{{ jdk_tarball_file }}.rpm"
+    state: present
+  when: ansible_pkg_mgr == "yum"

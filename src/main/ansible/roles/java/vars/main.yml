@@ -1,2 +1,4 @@
 ---
 # vars file for java
+jdk_version: "1.{{ java_version }}.0_{{ java_subversion }}"
+

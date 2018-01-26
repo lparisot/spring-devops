@@ -1,0 +1,13 @@
+---
+- name: mount the downloaded dmg
+  shell: hdiutil attach "{{ java_downloaded_path }}/{{ jdl_tarball_file }}.dmg"
+
+- name: install the pkg file
+  become: yes
+  shell: >
+    installer
+    -pkg "/Volumes/JDK {{ java_version }} Update {{ java_subversion }}/JDK {{ java_version }} Update {{ java_subversion }}.pkg"
+    -target /
+
+- name: umount the downloaded dmg
+  shell: hgiutil detach "/Volumes/JDK {{ java_version }} Update {{ java_subversion }}"

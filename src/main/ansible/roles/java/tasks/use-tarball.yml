@@ -1,0 +1,17 @@
+---
+- name: mkdir folder for Java
+  file:
+    path: "{{ java_install_dir }}/jdk{{ jdk_version }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "u=rwx,go=rx"
+
+- name: install JDK via tarball file
+  unarchive:
+    src: "{{ java_download_path }}/{{ jdk_tarball_file }}.tar.gz"
+    dest: "{{ java_install_dir }}"
+    owner: root
+    group: root
+    mode: "go-w"
+    copy: no
