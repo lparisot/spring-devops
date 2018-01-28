@@ -1,2 +1,4 @@
 ---
 # defaults file for jenkins
+jenkins_key: id_rsa_jenkins
+
