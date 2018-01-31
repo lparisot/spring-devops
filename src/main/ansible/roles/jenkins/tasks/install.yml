@@ -1,0 +1,26 @@
+---
+- name: add jenkins repository
+  get_url:
+    url: http://pkg.jenkins-ci.org/redhat/jenkins.repo
+    dest: /etc/yum.repos.d/jenkins.repo
+  changed_when: false
+  tags: [ 'packages' ]
+
+- name: import key from jenkins
+  rpm_key:
+    state: present
+    key: https://jenkins-ci.org/redhat/jenkins-ci.org.key
+  tags: [ 'packages' ]
+
+- name: install jenkins
+  yum:
+    name: jenkins
+    state: present
+  tags: [ 'packages' ]
+
+- name: remove jenkins repository
+  file:
+    name: /etc/yum.repos.d/jenkins.repo
+    state: absent
+  changed_when: false
+  tags: [ 'packages' ]

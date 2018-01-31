@@ -5,5 +5,5 @@
   roles:
     - java
     - git
+    - apache
     - jenkins
-    - apaches

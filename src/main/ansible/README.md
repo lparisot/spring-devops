@@ -7,10 +7,10 @@ You must create a file ~/.devops_pass.txt which contains your ansible vault pass
 You must create a new vault file in group_vars/all/vault, which contains
 ```
 ---
-vault_aws_access_key_id: yourawskeyid
-vault_aws_secret_access_key: yourawsaccesskey
+vault_aws_access_key_id: your aws key id
+vault_aws_secret_access_key: your aws access key
 
-vault_jenkins_admin_password: your admin account password
+vault_jenkins_admin_password: your jenkins admin account password
 ```
 To create your AWS access key, see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey
 
@@ -34,14 +34,17 @@ You must also change group_vars/all/vars file:
 $ ansible-playbook site.yml
 ```
 
-This playbook will create one instances in AWS. We use the CentOS 7 (x86_64) found in AWS market place.
-Instance type is t2.micro with a volume type gp2 with 8GB. With these values we are free tier eligible.
+This will run approximatively in 15 minutes.
+
+This playbook will create one instance in AWS. We use the CentOS 7 (x86_64) found in AWS market place.
+Instance type is t2.micro with a volume type gp2 with 8GB.
+With these values we are free tier eligible.
 
 So we have devops-jenkins01 which is a jenkins server.
 
 They will also create a security group (opening port 22 and 80).
 
-It will install all required applications.
+It will then install all required applications.
 
 The jenkins server will contains:
 * java jdk
@@ -52,15 +55,15 @@ The jenkins server will contains:
 It will also pre-configure the jenkins server:
 * with the admin password found in the vault as vault_jenkins_admin_password.
 * generate an SSH public key which will be stored under ansible/env/id_rsa.pub. This key must be used in your github project settings as a deploy key.
-* install a list of plugins which can be found in jenkins/defaults/main.yml
+* install a list of plugins which can be found in jenkins/defaults/main.yml (you can change them if needed).
 * add a global credential using the private key found under ~jenkins/.ssh
-* declare a new job named "Spring DevOps Project" which will wait for a push in the github project to launch a maven clean install
+* declare a new job named "Spring DevOps Project" which will wait for a push in the github project to launch a maven clean install.
 
 ## Github project
 
 On your github project:
-* you must copy in the settings under deploy keys, the content of the ansible/env/id_rsa.pub file.
-* you must create in the settings under Webhooks, a new webhook with the Payload URL equals to http://your_jenkins_url/github-webhook, no secret, and selecting "Just the push event" as event.
+* you must copy in the settings under "Deploy keys", the content of the ansible/env/id_rsa.pub file.
+* you must create in the settings under "Webhooks", a new webhook with the Payload URL equals to http://your_jenkins_url/github-webhook, no secret, and selecting "Just the push event" as event.
 
 Each time a push will be done, an event will be send to the jenkins server.
 

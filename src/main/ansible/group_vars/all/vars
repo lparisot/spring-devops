@@ -16,5 +16,10 @@ ec2_subnet: "subnet-040d314e"
 ec2_access_key: "{{ vault_aws_access_key_id }}"
 ec2_secret_key: "{{ vault_aws_secret_access_key }}"
 
+jenkins_admin_password: "{{ vault_jenkins_admin_password }}"
+
+github_user_name: lparisot
+github_user_project: spring-devops
+
 local_user: "{{ lookup('env', 'USER')}}"
 local_home: "{{ lookup('env', 'HOME')}}"

@@ -1,0 +1,62 @@
+---
+# com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialImpl
+#   id, scope, username, password
+# org.jenkinsci.plugins.plancredentials.impl.StringCredentialsImpl
+#   id, scope, secret
+# com.cloudbees.jenkins.plugins.awscredentials.AWSCredentialsImpl
+#   id, scope, accessKey, secretKey, iamRoleArn, iamMfaSerialNumber
+#   use "password": "{{ aws_secret_key|urlencode }}"
+# com.cloudbees.plugins.credentials.SystemCredentialsProvider
+#   id, scope
+- name: Add credential
+  uri:
+    user: admin
+    password: "{{ jenkins_admin_password }}"
+    force_basic_auth: yes
+    url: "http://127.0.0.1:8080/credentials/store/system/domain/_/createCredentials?{{ jenkins_crumb_token }}"
+    method: POST
+    body: |
+      json={
+        "": "0",
+        "credentials": {
+          "scope": "GLOBAL",
+          "id": "{{ credential_ssh_id }}",
+          "privateKeySource": {
+            "stapler-class": "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$UsersPrivateKeySource"
+          },
+          "description": "{{ credential_ssh_description }}",
+          "stapler-class": "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey"
+        }
+      }
+    status_code: 302
+
+- name: Get list of jobs
+  uri:
+    user: admin
+    password: "{{ jenkins_admin_password }}"
+    force_basic_auth: yes
+    url: "http://127.0.0.1:8080/api/json?tree=jobs[name]"
+    return_content: yes
+  register: jenkins_jobs
+  until: jenkins_jobs.content.find('Please wait while Jenkins is getting ready to work') == -1
+  retries: 10
+  delay: 5
+
+- name: Check if devops job exists
+  set_fact:
+    jenkins_devops_job_exists: "{{ job_devops_name in (jenkins_jobs.content|from_json).jobs|map(attribute='name')|list }}"
+
+- name: Create devops job
+  uri:
+    user: admin
+    password: "{{ jenkins_admin_password }}"
+    force_basic_auth: yes
+    url: "http://127.0.0.1:8080/createItem?name={{ job_devops_name|urlencode }}&{{ jenkins_crumb_token }}"
+    method: POST
+    headers:
+      Content-Type: "application/xml"
+    body: "{{ lookup('template', job_devops_template) }}"
+  register: jenkins_devops_job_created
+  when: not jenkins_devops_job_exists
+
+- debug: msg="jenkins_devops_job_created={{ jenkins_devops_job_created }}"

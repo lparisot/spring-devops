@@ -1,61 +1,7 @@
 ---
 # tasks file for jenkins
-- name: add jenkins repository
-  get_url:
-    url: http://pkg.jenkins-ci.org/redhat/jenkins.repo
-    dest: /etc/yum.repos.d/jenkins.repo
-  changed_when: false
-  tags: [ 'packages' ]
+- include_tasks: install.yml
 
-- name: import key from jenkins
-  rpm_key:
-    state: present
-    key: https://jenkins-ci.org/redhat/jenkins-ci.org.key
-  tags: [ 'packages' ]
+- include_tasks: configure.yml
 
-- name: install jenkins
-  yum:
-    name: jenkins
-    state: present
-  tags: [ 'packages' ]
-
-- name: remove jenkins repository
-  file:
-    name: /etc/yum.repos.d/jenkins.repo
-    state: absent
-  changed_when: false
-  tags: [ 'packages' ]
-
-- name: lock access to port 8080 to localhost
-  lineinfile:
-    dest: /etc/sysconfig/jenkins
-    regexp: "^JENKINS_LISTEN_ADDRESS="
-    line: 'JENKINS_LISTEN_ADDRESS="127.0.0.1"'
-    state: present
-  notify: restart jenkins
-  tags: [ 'config' ]
-
-- name: ensure jenkins is started
-  service: name=jenkins state=started enabled=yes
-  tags: [ 'service' ]
-
-# will create a public key under /var/lib/jenkins/.ssh
-- name: generate SSH key for jenkins
-  user:
-    name: jenkins
-    generate_ssh_key: yes
-    ssh_key_bits: 2048
-    ssh_key_comment: "jenkins@example.com"
-    ssh_key_file: ".ssh/{{ jenkins_key }}"
-
-- name: get jenkins config file
-  shell: cat /etc/sysconfig/jenkins | grep ^JENKINS_HOME | cut -d "=" -f 2 | sed -e 's/\"//g'
-  register: jenkins_config
-- set_fact:
-    jenkins_home: "{{ jenkins_config.stdout }}"
-
-- name: get public SSH key
-  fetch:
-    src: "{{ jenkins_home }}/.ssh/{{ jenkins_key }}.pub"
-    dest: "./env/{{ jenkins_key }}.pub"
-    flat: yes
+- include_tasks: jobs.yml

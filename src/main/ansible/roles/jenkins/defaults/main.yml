@@ -2,3 +2,94 @@
 # defaults file for jenkins
 jenkins_key: id_rsa
 
+jenkins_java_args: -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false
+
+credential_ssh_id: jenkins_ssh_keys
+credential_ssh_description: Jenkins SSH keys
+
+job_devops_name: Spring DevOps Project
+job_devops_template: devops-config.xml.j2
+
+github_user_name: lparisot
+github_user_project: spring-devops
+
+maven_version: 3.5.2
+maven_name: "Maven {{ maven_version }}"
+
+jenkins_plugins:
+  - build-timeout
+  - credentials
+  - ssh-credentials
+  - plain-credentials
+  - credentials-binding
+  - script-security
+  - command-launcher
+  - cloudbees-folder
+  - bouncycastle-api
+  - structs
+  - workflow-api
+  - workflow-step-api
+  - workflow-support
+  - workflow-job
+  - workflow-scm-step
+  - workflow-cps
+  - workflow-cps-global-lib
+  - workflow-multibranch
+  - workflow-basic-steps
+  - workflow-aggregator
+  - scm-api
+  - token-macro
+  - junit
+  - antisamy-markup-formatter
+  - timestamper
+  - durable-task
+  - workflow-durable-task-step
+  - matrix-project
+  - matrix-auth
+  - resource-disposer
+  - ws-cleanup
+  - ant
+  - gradle
+  - pipeline-milestone-step
+  - pipeline-input-step
+  - pipeline-stage-step
+  - pipeline-graph-analysis
+  - pipeline-rest-api
+  - pipeline-stage-view
+  - pipeline-build-step
+  - pipeline-model-api
+  - pipeline-model-extensions
+  - pipeline-stage-tags-metadata
+  - pipeline-model-declarative-agent
+  - pipeline-model-definition
+  - pipeline-github-lib
+  - apache-httpcomponents-client-4-api
+  - jquery-detached
+  - jackson2-api
+  - ace-editor
+  - handlebars
+  - momentjs
+  - windows-slaves
+  - display-url-api
+  - mailer
+  - jsch
+  - git-client
+  - git-server
+  - github-api
+  - git
+  - github
+  - github-branch-source
+  - authentication-tokens
+  - branch-api
+  - docker-commons
+  - docker-workflow
+  - mapdb-api
+  - subversion
+  - ssh-slaves
+  - pam-auth
+  - ldap
+  - job-dsl
+
+
+
+
