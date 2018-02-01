@@ -1,0 +1,12 @@
+---
+- hosts: artifactory
+  # get privilege
+  become: true
+  roles:
+    - docker
+    - role: apache
+      apache_vhosts:
+        - servername: "artifactory.parisot.xyz"
+          path: /artifactory
+          proxyport: 8081
+    - artifactory

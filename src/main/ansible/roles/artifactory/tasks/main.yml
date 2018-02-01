@@ -1,0 +1,30 @@
+---
+# tasks file for artifactory
+# see https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API
+# see https://www.jfrog.com/confluence/display/RTF/Maven+Repository#MavenRepository-ResolvingArtifactsthroughArtifactory
+
+- include_tasks: docker-install.yml
+  when: installation_docker
+
+- include_tasks: rpm-install.yml
+  when: installation_rpm
+
+
+- name: Wait for artifactory to become available
+  wait_for: port="{{ artifactory_port }}"
+
+# see https://www.jfrog.com/confluence/display/RTF/Security+Configuration+JSON
+# this REST API is not available in artifactory-oss
+- name: Update admin password
+  uri:
+    user: admin
+    password: "{{ artifactory_default_admin_password }}"
+    force_basic_auth: yes
+    url: "http://localhost:{{ artifactory_port }}/{{ artifactory_name }}/api/security/users/admin"
+    method: POST
+    body: |
+      json={
+        "password": "{{ artifactory_admin_password }}"
+      }
+    status_code: 200
+  when: 'not "oss" in artifactory_docker_image'

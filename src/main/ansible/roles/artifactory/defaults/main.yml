@@ -1,0 +1,15 @@
+---
+# defaults file for artifactory
+artifactory_name: artifactory
+
+artifactory_docker_name: jfrog_container
+artifactory_docker_image: docker.bintray.io/jfrog/artifactory-oss
+artifactory_docker_image_version: latest
+
+artifactory_port: 8081
+artifactory_default_admin_password: password
+
+volume_jfrog: /var/opt/jfrog
+
+installation_docker: true
+installation_rpm: false
