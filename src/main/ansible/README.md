@@ -1,8 +1,8 @@
-## Installation of our Jenkins server in AWS
+## Installation of our DevOps servers in AWS
 
 ## Some configuration
 
-You must create a file ~/.devops_pass.txt which contains your ansible vault password.
+You must create a file ~/.devops_pass.txt which contains your Ansible vault password.
 
 You must create a new vault file in group_vars/all/vault, which contains
 ```
@@ -42,11 +42,11 @@ With these values we are free tier eligible.
 
 If you have some slowness problem with the artifactory instance, uncomment the ec2_instance_type: "t2.small" line in master.yml file.
 
-So we have devops-jenkins01 which is a jenkins server and devops-artifactory01 which is an artifactory server.
+As we can see in dev file, we have devops-jenkins01 which is a jenkins server and devops-artifactory01 which is an artifactory server.
 
-They will also create two security groups (opening port 22 and 80).
-
-It will then install all required applications.
+* master.yml will create all AWS part (instances, security groups, ...).
+* jenkins.yml will populate the jenkins server
+* artifactory.yml will populate the artifactory server
 
 The jenkins server will contains:
 * java jdk
@@ -70,7 +70,13 @@ The docker image is the open source server docker.bintray.io/jfrog/artifactory-o
 
 The artifactory data will be stored in three volumes under /var/opt/jfrog/artifactory/ in data, logs and etc folders.
 
+## Jenkins
+
+See https://jenkins.io/
+
 ## Artifactory
+
+See https://jfrog.com/artifactory/
 
 First you must login admin to change immediately the default password (which is password).
 
@@ -78,6 +84,7 @@ Then you must launch the Quick Setup menu, selecting Maven repository. It will g
 
 Then you must update your settings.xml file with the new repository:
 * select Artifacts
+* select libs-release
 * click on Set Me Up
 * click on Generate Maven Settings
 * click on Generate Settings
