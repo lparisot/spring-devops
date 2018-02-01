@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>guru.springframework</groupId>
+	<groupId>com.lpa</groupId>
 	<artifactId>spring-core-devops</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -90,6 +90,17 @@
 			</plugin>
 		</plugins>
 	</build>
-	
 
+	<distributionManagement>
+		<repository>
+			<id>central</id>
+			<name>06437f25f210-releases</name>
+			<url>http://artifactory.parisot.xyz/artifactory/libs-release-local</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>06437f25f210-snapshots</name>
+			<url>http://artifactory.parisot.xyz/artifactory/libs-snapshot-local</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
