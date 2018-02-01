@@ -13,3 +13,8 @@ ec2_jenkins_groups:
     description: "Jenkins security group"
     vpc_id: "{{ ec2_vpc_default }}"
     region: "{{ ec2_region }}"
+ec2_artifactory_groups:
+  - name: artifactory
+    description: "Artifactory security group"
+    vpc_id: "{{ ec2_vpc_default }}"
+    region: "{{ ec2_region }}"

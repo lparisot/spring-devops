@@ -5,5 +5,9 @@
   roles:
     - java
     - git
-    - apache
+    - role: apache
+      apache_vhosts:
+        - servername: "jenkins.parisot.xyz"
+          path: /
+          proxyport: 8080
     - jenkins

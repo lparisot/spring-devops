@@ -1,3 +1,5 @@
 ---
 - include_tasks: security_group.yml group=jenkins
 - include_tasks: instance.yml group=jenkins
+- include_tasks: security_group.yml group=artifactory
+- include_tasks: instance.yml group=artifactory

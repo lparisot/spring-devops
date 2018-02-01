@@ -1,14 +1,5 @@
 ---
-project_name: jenkins
-
-apache_vhosts:
-  - servername: "jenkins.parisot.xyz"
-    proxyport: 8080
-
-#docker_application:
-#  id: lparisot
-#  image_name: rfbmono
-#  image_version: 0.0.3
+project_name: devops
 
 ec2_region: "eu-west-3"
 ec2_vpc_default: "vpc-e36e978a"
@@ -17,6 +8,9 @@ ec2_access_key: "{{ vault_aws_access_key_id }}"
 ec2_secret_key: "{{ vault_aws_secret_access_key }}"
 
 jenkins_admin_password: "{{ vault_jenkins_admin_password }}"
+
+artifactory_admin_password: "{{ vault_artifactory_admin_password }}"
+artifactory_proxy_key: "{{ vault_artifactory_proxy_key }}"
 
 github_user_name: lparisot
 github_user_project: spring-devops

@@ -5,7 +5,7 @@
   register: myip
   tags: [ 'ec2' ]
 
-- name: create security groups for a jenkins
+- name: create security group for jenkins
   ec2_group:
     name: "{{ project_name }}_{{ item.name }}_security_group"
     aws_access_key: "{{ ec2_access_key }}"
@@ -24,4 +24,25 @@
   set_fact:
     ec2_security_groups: "{{ ec2_security_groups | combine({group: ec2_security_groups_temp.results[0]}) }}"
   when: group == "jenkins"
+  tags: [ 'ec2' ]
+
+- name: create security group for artifactory
+  ec2_group:
+    name: "{{ project_name }}_{{ item.name }}_security_group"
+    aws_access_key: "{{ ec2_access_key }}"
+    aws_secret_key: "{{ ec2_secret_key }}"
+    description: "{{ project_name }} {{ item.description }} security group"
+    vpc_id: "{{ item.vpc_id }}"
+    region: "{{ item.region }}"
+    purge_rules: true
+    rules: "{{ artifactory_security_rules }}"
+  with_items: "{{ ec2_artifactory_groups }}"
+  register: ec2_security_groups_temp
+  when: group == "artifactory"
+  tags: [ 'ec2' ]
+
+- name: store result in ec2_security_groups
+  set_fact:
+    ec2_security_groups: "{{ ec2_security_groups | combine({group: ec2_security_groups_temp.results[0]}) }}"
+  when: group == "artifactory"
   tags: [ 'ec2' ]

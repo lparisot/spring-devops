@@ -5,9 +5,10 @@
   ProxyPreserveHost On
   AllowEncodedSlashes NoDecode
   ProxyPass / http://localhost:{{ vhost.proxyport }}/ nocanon
-  ProxyPassReverse / http://localhost:{{ vhost.proxyport }}/
-  ProxyPassReverse / http://{{ vhost.servername }}/
-  <Proxy http://localhost:{{ vhost.proxyport }}/*>
+  ProxyPass {{ vhost.path }} http://localhost:{{ vhost.proxyport }}{{ vhost.path }} nocanon
+  ProxyPassReverse {{ vhost.path }} http://localhost:{{ vhost.proxyport }}/
+  ProxyPassReverse {{ vhost.path }} http://{{ vhost.servername }}{{ vhost.path }}
+  <Proxy http://localhost:{{ vhost.proxyport }}/* >
     Order deny,allow
     Allow from all
   </Proxy>
