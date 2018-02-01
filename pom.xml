@@ -94,12 +94,12 @@
 	<distributionManagement>
 		<repository>
 			<id>central</id>
-			<name>06437f25f210-releases</name>
+			<name>3e10e254de46-releases</name>
 			<url>http://artifactory.parisot.xyz/artifactory/libs-release-local</url>
 		</repository>
 		<snapshotRepository>
 			<id>snapshots</id>
-			<name>06437f25f210-snapshots</name>
+			<name>3e10e254de46-snapshots</name>
 			<url>http://artifactory.parisot.xyz/artifactory/libs-snapshot-local</url>
 		</snapshotRepository>
 	</distributionManagement>

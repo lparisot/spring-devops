@@ -11,5 +11,4 @@ artifactory_default_admin_password: password
 
 volume_jfrog: /var/opt/jfrog
 
-installation_docker: true
-installation_rpm: false
+installation_docker: True

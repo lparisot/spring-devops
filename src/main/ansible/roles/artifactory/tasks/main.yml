@@ -11,7 +11,7 @@
   when: installation_docker
 
 - include_tasks: rpm-install.yml
-  when: installation_rpm
+  when: not installation_docker
 
 
 - name: Wait for artifactory to become available

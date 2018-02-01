@@ -20,6 +20,7 @@
           cidr_ip: 0.0.0.0/0
     - role: ec2
       group: artifactory
+      #ec2_instance_type: "t2.small"
       security_rules:
         - proto: tcp
           from_port: 80

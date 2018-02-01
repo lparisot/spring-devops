@@ -34,15 +34,17 @@ You must also change group_vars/all/vars file:
 $ ansible-playbook site.yml
 ```
 
-This will run approximatively in 15 minutes.
+This will run approximately for 15 minutes.
 
-This playbook will create one instance in AWS. We use the CentOS 7 (x86_64) found in AWS market place.
+This playbook will create two instances in AWS. We use the CentOS 7 (x86_64) found in AWS market place.
 Instance type is t2.micro with a volume type gp2 with 8GB.
 With these values we are free tier eligible.
 
-So we have devops-jenkins01 which is a jenkins server.
+If you have some slowness problem with the artifactory instance, uncomment the ec2_instance_type: "t2.small" line in master.yml file.
 
-They will also create a security group (opening port 22 and 80).
+So we have devops-jenkins01 which is a jenkins server and devops-artifactory01 which is an artifactory server.
+
+They will also create two security groups (opening port 22 and 80).
 
 It will then install all required applications.
 
@@ -58,6 +60,43 @@ It will also pre-configure the jenkins server:
 * install a list of plugins which can be found in jenkins/defaults/main.yml (you can change them if needed).
 * add a global credential using the private key found under ~jenkins/.ssh
 * declare a new job named "Spring DevOps Project" which will wait for a push in the github project to launch a maven clean install.
+
+The artifactory server will contains:
+* docker
+* an apache server waiting on port 80 and redirecting to port 8081
+* an artifactory container accessible on port 8081
+
+The docker image is the open source server docker.bintray.io/jfrog/artifactory-oss.
+
+The artifactory data will be stored in three volumes under /var/opt/jfrog/artifactory/ in data, logs and etc folders.
+
+## Artifactory
+
+First you must login admin to change immediately the default password (which is password).
+
+Then you must launch the Quick Setup menu, selecting Maven repository. It will generate some artifacts.
+
+Then you must update your settings.xml file with the new repository:
+* select Artifacts
+* click on Set Me Up
+* click on Generate Maven Settings
+* click on Generate Settings
+* copy and paste it in your settings.xml file
+* replace username with admin
+
+To get encrypted admin password:
+* open admin profile
+* enter current password to unlock
+* copy encrypted password
+* paste it in your settings.xml file
+
+In your pom.xml file you must copy the distributionManagement repositories for libs-release-local and libs-snapshot-local:
+* select Artifacts
+* select libs-release-local
+* select Set Me Up
+* copy the deploy xml part to your pom.xml
+
+Do the same for the libs-snapshot-local.
 
 ## Github project
 
