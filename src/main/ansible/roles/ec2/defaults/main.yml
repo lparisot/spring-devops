@@ -11,7 +11,7 @@ ec2_instance_type: "t2.micro"
 ec2_image: "ami-0c60d771"
 ec2_volume_size: 8
 
-jenkins_security_rules:
+security_rules:
   - proto: tcp
     from_port: 80
     to_port: 80

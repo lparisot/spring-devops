@@ -1,5 +1,9 @@
 ---
 # tasks file for jenkins
+- name: update yum cache
+  yum: name=* state=latest update_cache=yes
+  tags: [ 'packages' ]
+
 - include_tasks: install.yml
 
 - include_tasks: configure.yml

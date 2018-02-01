@@ -8,13 +8,8 @@ ec2_my_key: "{{ project_name }}-{{ env }}-key"
 
 ec2_instances_running: {}
 ec2_security_groups: {}
-ec2_jenkins_groups:
-  - name: jenkins
-    description: "Jenkins security group"
-    vpc_id: "{{ ec2_vpc_default }}"
-    region: "{{ ec2_region }}"
-ec2_artifactory_groups:
-  - name: artifactory
-    description: "Artifactory security group"
+ec2_groups:
+  - name: "{{ group }}"
+    description: "{{ group }} security group"
     vpc_id: "{{ ec2_vpc_default }}"
     region: "{{ ec2_region }}"

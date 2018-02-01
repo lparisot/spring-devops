@@ -3,6 +3,10 @@
 # see https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API
 # see https://www.jfrog.com/confluence/display/RTF/Maven+Repository#MavenRepository-ResolvingArtifactsthroughArtifactory
 
+- name: update yum cache
+  yum: name=* state=latest update_cache=yes
+  tags: [ 'packages' ]
+
 - include_tasks: docker-install.yml
   when: installation_docker
 
