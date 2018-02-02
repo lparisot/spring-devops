@@ -34,6 +34,10 @@ You must also change group_vars/all/vars file:
 $ ansible-playbook site.yml
 ```
 
+* site.yml: call app.yml and devops.yml
+* devops.yml: create a jenkins server and an artifactory server
+* app.yml: create a mysql server
+
 This will run approximately for 15 minutes.
 
 This playbook will create two instances in AWS. We use the CentOS 7 (x86_64) found in AWS market place.

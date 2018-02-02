@@ -1,0 +1,14 @@
+---
+- import_playbook: master_devops.yml
+
+- hosts: [jenkins, artifactory]
+  become: true
+  gather_facts: false
+  tasks:
+    - name: update yum cache
+      yum: name=* state=latest update_cache=yes
+      tags: [ 'packages' ]
+
+- import_playbook: jenkins.yml
+
+- import_playbook: artifactory.yml

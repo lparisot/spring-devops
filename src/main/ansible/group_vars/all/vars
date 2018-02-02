@@ -15,5 +15,12 @@ artifactory_proxy_key: "{{ vault_artifactory_proxy_key }}"
 github_user_name: lparisot
 github_user_project: spring-devops
 
+db_name: springguru
+db_port: 3306
+# user name: maximum length = 16 characters
+db_user_name: springguru_owner
+db_user_password: "{{ vault_db_user_password }}"
+open_3306_for_me: True
+
 local_user: "{{ lookup('env', 'USER')}}"
 local_home: "{{ lookup('env', 'HOME')}}"

@@ -4,5 +4,8 @@ devops-jenkins01
 [artifactory]
 devops-artifactory01
 
+[database]
+devops-mysql01
+
 [control]
 master ansible_connection=local ansible_python_interpreter=python
