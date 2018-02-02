@@ -1,0 +1,8 @@
+---
+- hosts: webserver
+  # get privilege
+  become: true
+  roles:
+    - role: java
+      open_jdk: True
+    #- apache

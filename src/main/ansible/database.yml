@@ -4,7 +4,7 @@
   become: true
   roles:
     - role: geerlingguy.mysql
-      mysql_root_password: password
+      mysql_root_password: "{{ db_root_password }}"
       mysql_databases:
         - name: "{{ db_name }}"
       mysql_users:

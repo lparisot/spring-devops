@@ -9,4 +9,7 @@
       yum: name=* state=latest update_cache=yes
       tags: [ 'packages' ]
 
+- import_playbook: webserver.yml
+
 - import_playbook: database.yml
+

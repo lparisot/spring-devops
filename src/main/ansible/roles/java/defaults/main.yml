@@ -3,6 +3,8 @@
 java_version: 8
 java_subversion: 161
 
+open_jdk: False
+
 java_download_path: /tmp
 java_remove_download: true
 

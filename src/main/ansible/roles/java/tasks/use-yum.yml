@@ -1,0 +1,6 @@
+---
+- name: install openJDK with yum
+  yum:
+    name: "{{ jdk_tarball_file }}"
+    state: present
+  when: open_jdk

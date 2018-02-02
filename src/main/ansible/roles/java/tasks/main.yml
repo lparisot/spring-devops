@@ -36,10 +36,15 @@
 
 
 
-- name: compose filename, if necessary
+- name: compose filename for Oracle JDK, if necessary
   set_fact:
     jdk_tarball_file: "jdk-{{ java_version }}u{{ java_subversion }}-{{ jdk_os }}-{{ jdk_arch }}"
-  when: jdk_tarball_file is not defined
+  when: jdk_tarball_file is not defined and not open_jdk
+
+- name: compose filename for open JDK, if necessary
+  set_fact:
+    jdk_tarball_file: "java-1.{{ java_version }}.0-openjdk"
+  when: jdk_tarball_file is not defined and open_jdk
 
 - name: compose URL for downloading file, if necessary
   set_fact:
@@ -71,7 +76,7 @@
     headers: "Cookie:oraclelicense=accept-securebackup-cookie"
     dest: "{{ java_download_path }}/{{ jdk_tarball_file }}.tar.gz"
   changed_when: false
-  when: ansible_os_family != "Darwin"
+  when: ansible_os_family != "Darwin" and not open_jdk
   tags: [ 'packages' ]
 
 - name: get JDK package (as dmg file)
@@ -100,9 +105,13 @@
   include_tasks: use-tarball.yml
   when: tar_file.stat.exists == True
 
-- name: delegate to yum installation process
+- name: delegate to rpm installation process
   include_tasks: use-rpm.yml
   when: rpm_file.stat.exists == True
+
+- name: delegate to yum installation process
+  include_tasks: use-yum.yml
+  when: open_jdk
 
 - name: delegate to Mac OS X dmg installation process
   include_tasks: use-dmg.yml
@@ -116,6 +125,7 @@
     link: /usr/bin/java
     path: "{{ java_install_dir }}/jdk{{ jdk_version }}/bin/java"
     priority: 2
+  when: not open_jdk
 
 - name: alternatives link for jar is created
   alternatives:
@@ -123,6 +133,7 @@
     link: /usr/bin/jar
     path: "{{ java_install_dir }}/jdk{{ jdk_version }}/bin/jar"
     priority: 2
+  when: not open_jdk
 
 - name: alternatives link for javac is created
   alternatives:
@@ -130,6 +141,7 @@
     link: /usr/bin/javac
     path: "{{ java_install_dir }}/jdk{{ jdk_version }}/bin/javac"
     priority: 2
+  when: not open_jdk
 
 
 

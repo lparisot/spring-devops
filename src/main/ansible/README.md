@@ -11,6 +11,9 @@ vault_aws_access_key_id: your aws key id
 vault_aws_secret_access_key: your aws access key
 
 vault_jenkins_admin_password: your jenkins admin account password
+
+vault_db_root_password: the root password of the mysql database
+vault_db_user_password: the user password of our database
 ```
 To create your AWS access key, see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey
 
@@ -47,6 +50,7 @@ With these values we are free tier eligible.
 If you have some slowness problem with the artifactory instance, uncomment the ec2_instance_type: "t2.small" line in master.yml file.
 
 As we can see in dev file, we have devops-jenkins01 which is a jenkins server and devops-artifactory01 which is an artifactory server.
+On application side, we have devops-mysql01 which is a mysql server and devops-webserver01 which contains the application.
 
 * master.yml will create all AWS part (instances, security groups, ...).
 * jenkins.yml will populate the jenkins server
