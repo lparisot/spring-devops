@@ -5,7 +5,7 @@
 
 	<groupId>com.lpa</groupId>
 	<artifactId>spring-core-devops</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>Spring Core DevOps</name>
@@ -94,12 +94,12 @@
 	<distributionManagement>
 		<repository>
 			<id>central</id>
-			<name>3e10e254de46-releases</name>
+			<name>5f766e8b3ad0-releases</name>
 			<url>http://artifactory.parisot.xyz/artifactory/libs-release-local</url>
 		</repository>
 		<snapshotRepository>
 			<id>snapshots</id>
-			<name>3e10e254de46-snapshots</name>
+			<name>5f766e8b3ad0-snapshots</name>
 			<url>http://artifactory.parisot.xyz/artifactory/libs-snapshot-local</url>
 		</snapshotRepository>
 	</distributionManagement>

@@ -1,2 +1,12 @@
 ---
 # defaults file for application
+application_version: 0.0.1
+application_snapshot: False
+application_artifactId: spring-core-devops
+application_groupId: com.lpa
+
+artifactory_dns: artifactory.parisot.xyz
+
+jasypt_password: gurupassword
+
+service_name: springboot

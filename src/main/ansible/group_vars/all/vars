@@ -7,6 +7,8 @@ ec2_subnet: "subnet-040d314e"
 ec2_access_key: "{{ vault_aws_access_key_id }}"
 ec2_secret_key: "{{ vault_aws_secret_access_key }}"
 
+ec2_user: centos
+
 jenkins_admin_password: "{{ vault_jenkins_admin_password }}"
 
 artifactory_admin_password: "{{ vault_artifactory_admin_password }}"
@@ -21,7 +23,7 @@ db_name: springguru
 # user name: maximum length = 16 characters
 db_user_name: springguru_owner
 db_user_password: "{{ vault_db_user_password }}"
-open_3306_for_me: True
+open_3306_for_me: False
 
 local_user: "{{ lookup('env', 'USER')}}"
 local_home: "{{ lookup('env', 'HOME')}}"

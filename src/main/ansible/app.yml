@@ -1,7 +1,7 @@
 ---
 - import_playbook: master_app.yml
 
-- hosts: [database]
+- hosts: [webserver, database]
   become: true
   gather_facts: false
   tasks:

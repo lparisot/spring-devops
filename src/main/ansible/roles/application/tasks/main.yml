@@ -1,2 +1,129 @@
 ---
 # tasks file for application
+- name: enable epel
+  yum:
+    name: epel-release
+    state: present
+
+- name: install tools
+  yum: name={{ item }} state=present
+  with_items:
+    - wget
+    - python-pip
+  tags: [ 'packages' ]
+
+- name: install boto
+  pip:
+    name: boto3
+    state: present
+  tags: [ 'packages' ]
+
+
+- name: snapshot
+  set_fact:
+    repository: "libs-snapshot-local"
+  when: application_snapshot
+
+- name: release
+  set_fact:
+    repository: "libs-release-local"
+  when: not application_snapshot
+
+- name: compose file name
+  set_fact:
+    application_file_name: "{{ application_artifactId }}-{{ application_version }}.jar"
+
+- name: compose search URL
+  set_fact:
+    search_url: "http://{{ artifactory_dns }}/artifactory/api/search/artifact?name={{ application_artifactId }}-{{ application_version }}*.jar&repos={{ repository }}"
+
+- name: search for application URL
+  uri:
+    url: "{{ search_url }}"
+    method: GET
+    return_content: yes
+  register: search_results
+
+- name: get description if found
+  set_fact:
+    description_url: "{{ (search_results.content | from_json)['results'][0].uri }}"
+  when: "{{ (search_results.content | from_json)['results'] | length }} > 0"
+
+- name: search for application URL
+  uri:
+    url: "{{ description_url }}"
+    method: GET
+    return_content: yes
+  register: search_results
+
+- name: get application if found
+  set_fact:
+    application_url: "{{ (search_results.content | from_json).downloadUri }}"
+
+
+
+- name: delete application jar file
+  file:
+    path: "./{{ application_artifactId }}-{{ application_version }}.jar"
+    state: absent
+
+- name: download application jar file
+  get_url:
+    url: "{{ application_url }}"
+    dest: "./{{ application_artifactId }}-{{ application_version }}.jar"
+    owner: "{{ ec2_user }}"
+    group: "{{ ec2_user }}"
+  changed_when: false
+  when: application_url is defined
+  tags: [ 'application' ]
+
+
+
+- name: get facts about instances
+  ec2_instance_facts:
+    aws_access_key: "{{ ec2_access_key }}"
+    aws_secret_key: "{{ ec2_secret_key }}"
+    region: "{{ ec2_region }}"
+    filters:
+      "tag:type": "database"
+  register: ec2_group_instances
+  tags: [ 'service' ]
+
+- name: store new running instances results
+  set_fact:
+    ec2_instances_running: "{{ (ec2_instances_running | default({})) | combine({'database': ec2_group_instances.instances | selectattr('state.name', 'equalto', 'running') | list}) }}"
+  tags: [ 'service' ]
+
+- name: construct datasource URL
+  set_fact:
+    datasource_url: "jdbc:mysql://{{ ec2_instances_running['database'][0].public_dns_name }}:{{ db_port }}/{{ db_name }}"
+  tags: [ 'service' ]
+
+- name: construct systemd service file
+  template:
+    src: springboot.service.j2
+    dest: "/etc/systemd/system/{{ service_name }}.service"
+    mode: 0755
+
+- name: construct application.properties file
+  template:
+    src: application.properties.j2
+    dest: "./application.properties"
+    mode: 0600
+    owner: "{{ ec2_user }}"
+    group: "{{ ec2_user }}"
+
+
+
+- name: force systemd to reread configs
+  systemd: daemon_reload=yes
+
+- name: declare springboot as service at boot time
+  systemd:
+    name: "{{ service_name }}"
+    enabled: yes
+
+- name: start springboot
+  systemd:
+    name: "{{ service_name }}"
+    state: started

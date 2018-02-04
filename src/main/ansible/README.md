@@ -21,7 +21,7 @@ You must change all keys with yours then encrypt the file with:
 ```
 $ ansible-vault encrypt group_vars/all/vault
 ```
-The file will be encrypt without asking any password, using the one found in ~/.devops_pass.txt file (this filename is defined in ansible.cfg file).
+The file will be encrypted without asking any password, using the one found in ~/.devops_pass.txt file (this filename is defined in ansible.cfg file).
 
 You must also change group_vars/all/vars file:
 * The servername with your domain name.
@@ -47,7 +47,7 @@ This playbook will create two instances in AWS. We use the CentOS 7 (x86_64) fou
 Instance type is t2.micro with a volume type gp2 with 8GB.
 With these values we are free tier eligible.
 
-If you have some slowness problem with the artifactory instance, uncomment the ec2_instance_type: "t2.small" line in master.yml file.
+If you have some slowness problem with the artifactory instance, uncomment the ec2_instance_type: "t2.small" line in master_devops.yml file.
 
 As we can see in dev file, we have devops-jenkins01 which is a jenkins server and devops-artifactory01 which is an artifactory server.
 On application side, we have devops-mysql01 which is a mysql server and devops-webserver01 which contains the application.
@@ -55,6 +55,7 @@ On application side, we have devops-mysql01 which is a mysql server and devops-w
 * master.yml will create all AWS part (instances, security groups, ...).
 * jenkins.yml will populate the jenkins server
 * artifactory.yml will populate the artifactory server
+* webserver.yml will populate the webserver with our application
 
 The jenkins server will contains:
 * java jdk
@@ -77,6 +78,13 @@ The artifactory server will contains:
 The docker image is the open source server docker.bintray.io/jfrog/artifactory-oss.
 
 The artifactory data will be stored in three volumes under /var/opt/jfrog/artifactory/ in data, logs and etc folders.
+
+The webserver will contains:
+* java, the open source JDK
+* an apache server waiting on port 80 and redirecting to port 8080
+* the application jar file running a tomcat server and the application on port 8080
+
+The application files will be stored under the centos account in /home/centos.
 
 ## Jenkins
 
@@ -113,6 +121,8 @@ In your pom.xml file you must copy the distributionManagement repositories for l
 
 Do the same for the libs-snapshot-local.
 
+Then you can do a "clean install" maven command and a deploy maven command to retrieve and pull your artifact in Artifactory.
+
 ## Github project
 
 On your github project:
@@ -121,7 +131,7 @@ On your github project:
 
 Each time a push will be done, an event will be send to the jenkins server.
 
-## Test
+## Test of DevOps servers
 
 At last, you can connect via your browser to the public DNS of the jenkins server with account admin.
 
@@ -137,3 +147,17 @@ $ sudo less /var/log/jenkins/jenkins.log
 $ systemctl status jenkins
 $ systemctl status httpd
 ```
+
+## Application
+
+On devops-webserver01 the application is launched as a service named springboot.
+
+See /etc/systemd/system/springboot.service file for the description.
+It will use the spring-core-devops jar file downloaded from artifactory and the application.properties file construct by Ansible.
+
+You can connect with ssh to devops-webserver01 and check the status of the service with:
+```bash
+$ systemctl status springboot
+```
+
+Then you can browse the application on the webserver address on port 80.

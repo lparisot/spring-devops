@@ -5,4 +5,9 @@
   roles:
     - role: java
       open_jdk: True
-    #- apache
+    - role: apache
+      apache_vhosts:
+        - servername: "app.parisot.xyz"
+          path: /
+          proxyport: 8080
+    - application

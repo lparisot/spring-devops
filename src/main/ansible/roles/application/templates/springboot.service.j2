@@ -1,0 +1,14 @@
+### File name springboot.service ###
+[Unit]
+Description=Spring Boot Service
+After=syslog.target
+
+[Service]
+User={{ ec2_user }}
+# set dir to location of application.properties and springboot.jar
+WorkingDirectory=/home/{{ ec2_user }}
+ExecStart=/bin/java -jar {{ application_artifactId }}-{{ application_version }}.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
